@@ -55,14 +55,10 @@ pipeline {
   }
 
   stages {
-    // =========================
-    // Ejercicio 1 (estructura básica)
-    // =========================
     stage('Info') {
       steps {
-        // TODO (E1): imprime JOB_NAME y BUILD_NUMBER
-        // echo "Job: ${env.JOB_NAME}"
-        // echo "Build: ${env.BUILD_NUMBER}"
+        echo "Job: ${env.JOB_NAME}"
+        echo "Build: ${env.BUILD_NUMBER}"
       }
     }
 
