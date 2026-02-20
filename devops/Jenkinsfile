@@ -1,37 +1,201 @@
 /*
-  Practica 2 - Jenkinsfile dummy (PUNTO DE PARTIDA)
+  Práctica 2 - Jenkinsfile (estructura final / guía)
 
-  Este Jenkinsfile es intencionalmente simple. En la Practica 2 iras anadiendo
-  piezas (stages, agents, funciones Groovy, Docker build, docker compose, etc.)
-  hasta construir un pipeline CI/CD completo.
+  Este fichero NO contiene la solución “copiable”.
+  Contiene la estructura final que deberías alcanzar tras completar los ejercicios,
+  con comentarios indicando qué debes implementar en cada punto.
+
+  Reglas del curso (ver Práctica 2):
+  - CI se ejecuta en cualquier rama.
+  - CD solo se ejecuta en develop/master y si el parámetro RUN_CD está activado.
 */
 
+// =========================
+// Ejercicio 4 (Groovy): función reutilizable
+// =========================
+def runInDocker(String image, Closure body) {
+  // TODO (E4): Ejecuta `body()` dentro del contenedor indicado usando Docker Pipeline:
+  // docker.image(image).inside { body() }
+}
+
+// =========================
+// Ejercicio 9 (opcional): mini “librería” para Compose
+// =========================
+def composeUpTestDown(Map args = [:]) {
+  // TODO (E9): Implementa el flujo:
+  // 1) args.up
+  // 2) args.test
+  // 3) siempre ejecutar args.down (aunque falle)
+}
+
 pipeline {
-  // `agent any` = el pipeline se ejecuta en cualquier nodo/agente disponible.
   agent any
 
+  options {
+    // Opcional: timestamps() / disableConcurrentBuilds()
+  }
+
+  // =========================
+  // Ejercicio 6.3 (parámetros)
+  // =========================
+  parameters {
+    // TODO (E6.3): Añade un booleanParam RUN_CD (default false) para habilitar CD.
+    // booleanParam(name: 'RUN_CD', defaultValue: false, description: 'Ejecutar CD (solo develop/master)')
+  }
+
+  // =========================
+  // Ejercicio 6.4 (variables de entorno)
+  // =========================
+  environment {
+    // TODO (E6.4): Define variables reutilizables:
+    // - IMAGE_NAME (tag para docker build)
+    // - APP_URL (endpoint para e2e)
+    // - CI_IMAGE_NAME (imagen construida desde devops/ci.Dockerfile para usar `make`)
+    // - (opcional E7) REGISTRY y REGISTRY_CREDS_ID
+  }
+
   stages {
-    stage('Test') {
-      /*
-        `agent` dentro de un stage permite que SOLO ese stage se ejecute en un contexto concreto.
-        En este caso, usamos Docker como capa de virtualizacion: los comandos se ejecutan dentro
-        de un contenedor temporal.
-      */
-      agent {
-        docker {
-          image 'maven:3.8.6-openjdk-11-slim'
+    // =========================
+    // Ejercicio 1 (estructura básica)
+    // =========================
+    stage('Info') {
+      steps {
+        // TODO (E1): imprime JOB_NAME y BUILD_NUMBER
+        // echo "Job: ${env.JOB_NAME}"
+        // echo "Build: ${env.BUILD_NUMBER}"
+      }
+    }
+
+    // =========================
+    // Ejercicio 3 (preparación): construir imagen CI con make
+    // =========================
+    stage('CI - Build tools image') {
+      steps {
+        script {
+          // TODO (E3): Construye una imagen de CI desde devops/ci.Dockerfile.
+          // Ejemplo:
+          // env.CI_IMAGE_NAME = "python-ci-tools:${env.BUILD_NUMBER}"
+          // docker.build(env.CI_IMAGE_NAME, "-f devops/ci.Dockerfile .")
+        }
+      }
+    }
+
+    // =========================
+    // Ejercicio 3 (separar CI): stage Lint
+    // =========================
+    stage('CI - Lint') {
+      steps {
+        script {
+          // TODO (E3/E4): Ejecuta lint en contenedor Python.
+          // runInDocker(env.CI_IMAGE_NAME) {
+          //   sh 'pip install -r requirements.txt flake8 mypy'
+          //   sh 'make lint'
+          // }
+          //
+          // Nota docente:
+          // La primera ejecución puede fallar por formato (black --check).
+          // Flujo esperado:
+          // 1) crear rama `fix/lint`
+          // 2) ejecutar `make reformat` en local
+          // 3) commit + push y relanzar Jenkins
+        }
+      }
+    }
+
+    // =========================
+    // Ejercicio 2 (Docker como agente) + Ejercicio 4 (refactor con runInDocker)
+    // =========================
+    stage('CI - Test') {
+      steps {
+        script {
+          // TODO (E2/E4): Ejecuta los tests unitarios dentro de la imagen CI construida.
+          // Ejemplo conceptual:
+          // runInDocker(env.CI_IMAGE_NAME) {
+          //   sh 'pip install -r requirements.txt'
+          //   sh 'pytest -q'
+          // }
+        }
+      }
+    }
+
+    // =========================
+    // Ejercicio 5 (docker build)
+    // =========================
+    stage('CI - Build image') {
+      steps {
+        script {
+          // TODO (E5): Construye la imagen Docker usando el Dockerfile del repo:
+          // docker.build(env.IMAGE_NAME, "-f devops/Dockerfile .")
+        }
+      }
+    }
+
+    // =========================
+    // Ejercicio 7 (opcional): push a registry privado
+    // =========================
+    stage('CI - Push image (opcional)') {
+      when {
+        // TODO (E7): Ejecuta solo si has añadido un parámetro tipo ENABLE_REGISTRY_PUSH
+        // expression { return params.ENABLE_REGISTRY_PUSH }
+      }
+      steps {
+        script {
+          // TODO (E7): Taggea y pushea la imagen a local-registry:5000 usando credenciales Jenkins.
+          // docker.withRegistry("http://${env.REGISTRY}", env.REGISTRY_CREDS_ID) { ... }
+        }
+      }
+    }
+
+    // =========================
+    // Ejercicio 6 (compose) + Ejercicio 6.1 (solo develop/master) + Ejercicio 6.3 (RUN_CD)
+    // =========================
+    stage('CD') {
+      when {
+        allOf {
+          anyOf {
+            branch 'develop'
+            branch 'master'
+          }
+          // TODO (E6.3): Solo ejecutar CD si RUN_CD es true
+          // expression { return params.RUN_CD }
         }
       }
       steps {
-        sh 'mvn -version'
-        sh 'echo "Stage dummy. En la Practica 2 ejecutaras aqui los tests unitarios."'
+        script {
+          // TODO (E6.2): Define DEPLOY_ENV según la rama (develop=DEV, master=PRO) y muestra logs.
+          // TODO (E6): Ejecuta:
+          // - docker compose up -d
+          // - mostrar logs del servicio
+          // - limpieza con docker compose down --volumes
+          //
+          // Recomendado: encapsular con composeUpTestDown(...) (E9).
+        }
+      }
+      post {
+        // =========================
+        // Ejercicio 6.5 (hooks post)
+        // =========================
+        always {
+          // TODO (E6.5): Limpieza garantizada:
+          // sh 'docker compose down --volumes || true'
+          // sh 'docker rmi IMAGE_NAME || true'
+        }
+        success {
+          // TODO (E6.5): Mensaje de éxito
+          // echo 'SUCCESS'
+        }
+        failure {
+          // TODO (E6.5): Mensaje de fallo + logs útiles
+          // echo 'FAILURE'
+          // sh 'docker compose logs || true'
+        }
       }
     }
-    stage('Info'){
-      steps {
-        echo "Job: ${env.JOB_NAME}"
-        echo "Build: ${env.BUILD_NUMBER}"
-      }
-    }
+  }
+
+  post {
+    // Post global del pipeline (opcional):
+    // - limpieza adicional
+    // - notificaciones
   }
 }
