@@ -1,0 +1,18 @@
+/*
+  Practica 2 - Jenkinsfile  Pipelines CI/CD en Jenkins con Docker y Groovy 
+*/
+
+pipeline {
+  // `agent any` = el pipeline se ejecuta en cualquier nodo/agente disponible.
+  agent any
+
+  stages {
+    stage('Info') {
+      steps {
+        // TODO (E1): imprime JOB_NAME y BUILD_NUMBER
+        echo "Job: ${env.JOB_NAME}"
+        echo "Build: ${env.BUILD_NUMBER}"
+      }
+    }
+  }
+}
