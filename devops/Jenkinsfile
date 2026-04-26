@@ -28,5 +28,14 @@ pipeline {
         }
       }
     }
+
+    stage('Info2') {
+      steps {
+        // TODO (E1): imprime JOB_NAME y BUILD_NUMBER
+        echo "Job: ${env.JOB_NAME}"
+        echo "Build: ${env.BUILD_NUMBER}"
+        sh "pwd"
+      }
+    }
   }
 }
