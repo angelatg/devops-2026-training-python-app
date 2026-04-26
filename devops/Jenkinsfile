@@ -22,6 +22,7 @@ pipeline {
       steps {
         script {
           // TODO (E2): Ejecuta los tests unitarios dentro de la imagen CI construida.
+          sh 'python --version'
           sh 'pip install -r requirements.txt'
           sh 'pytest -q'
         }
