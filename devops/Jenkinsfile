@@ -92,12 +92,14 @@ pipeline {
       when {
         allOf {
           anyOf {
+            expression { return params.RUN_CD }
             branch 'develop'
             branch 'master'
           }
         }
       }
       steps {
+        echo "CD habilitado: RUN_CD=${params.RUN_CD}, branch=${env.BRANCH_NAME}"
         script {
           // TODO (E6): Ejecuta:
           env.CD_LOCAL_NAME = "local_app"
