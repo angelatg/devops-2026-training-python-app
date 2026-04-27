@@ -15,6 +15,11 @@ pipeline {
   // `agent any` = el pipeline se ejecuta en cualquier nodo/agente disponible.
   agent any
 
+  parameters {
+    // [E6.1] TODO: añade parámetro para habilitar CD.
+    booleanParam(name: 'RUN_CD', defaultValue: false, description: 'Ejecutar CD')
+  }
+
   stages {
     stage('Info') {
       steps {
