@@ -2,6 +2,15 @@
   Practica 2 - Jenkinsfile  Pipelines CI/CD en Jenkins con Docker y Groovy 
 */
 
+// =========================
+// Ejercicio 4 (Groovy): función reutilizable
+// =========================
+def runInDocker(String image, Closure body) {
+  // TODO (E4): Ejecuta `body()` dentro del contenedor indicado usando Docker Pipeline:
+  docker.image(image).inside { body() }
+}
+
+
 pipeline {
   // `agent any` = el pipeline se ejecuta en cualquier nodo/agente disponible.
   agent any
@@ -33,35 +42,30 @@ pipeline {
     // Ejercicio 3 (separar CI): stage Lint
     // =========================
     stage('CI - Lint') {
-      agent {
-        docker {
-          image env.CI_IMAGE_NAME
-        }
-      }
       steps {
         script {
-          // TODO (E3): Ejecuta lint en contenedor Python.
-          sh 'pip install -r requirements.txt flake8 mypy'
-          sh 'make lint'
+          // TODO (E3/E4): Ejecuta lint en contenedor Python.
+          runInDocker(env.CI_IMAGE_NAME) {
+            sh 'pip install -r requirements.txt flake8 mypy'
+            sh 'make lint'
+          }
         }
       }
     }
 
 
     // =========================
-    // Ejercicio 2 (Docker como agente) 
+    // Ejercicio 2 (Docker como agente) + Ejercicio 4 (refactor con runInDocker)
     // =========================
     stage('Test') {
-      agent {
-        docker {
-          image env.CI_IMAGE_NAME
-        }
-      }
-      steps {
+        steps {
         script {
-          // TODO (E2): Ejecuta los tests unitarios dentro de la imagen CI construida.
-          sh 'pip install -r requirements.txt'
-          sh 'pytest -q'
+          // TODO (E2/E4): Ejecuta los tests unitarios dentro de la imagen CI construida.
+          runInDocker(env.CI_IMAGE_NAME) {
+            sh 'python --version'
+            sh 'pip install -r requirements.txt'
+            sh 'pytest -q'
+          }
         }
       }
     }
