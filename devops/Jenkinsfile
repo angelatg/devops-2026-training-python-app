@@ -70,6 +70,20 @@ pipeline {
       }
     }
 
+
+    // =========================
+    // Ejercicio 5 (docker build)
+    // =========================
+    stage('CI - Build image') {
+      steps {
+        script {
+          // TODO (E5): Construye la imagen Docker usando el Dockerfile del repo:
+          env.IMAGE_NAME = "angelatg/devops-training-python-app:0.0.1"
+          docker.build(env.IMAGE_NAME, "-f devops/Dockerfile .")
+        }
+      }
+    }
+
    
   }
 }
