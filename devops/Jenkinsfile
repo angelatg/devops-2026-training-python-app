@@ -33,6 +33,11 @@ pipeline {
     // Ejercicio 3 (separar CI): stage Lint
     // =========================
     stage('CI - Lint') {
+      agent {
+        docker {
+          image 'python:3.6-slim'
+        }
+      }
       steps {
         script {
           // TODO (E3): Ejecuta lint en contenedor Python.
