@@ -45,7 +45,7 @@ pipeline {
       steps {
         script {
           // TODO (E3/E4): Ejecuta lint en contenedor Python.
-          runInDocker(env.CI_IMAGE_NAME) {
+          runInDocker(env.CI_IMAGE_NAME_NAME) {
             sh 'pip install -r requirements.txt flake8 mypy'
             sh 'make lint'
           }
@@ -61,7 +61,7 @@ pipeline {
         steps {
         script {
           // TODO (E2/E4): Ejecuta los tests unitarios dentro de la imagen CI construida.
-          runInDocker(env.CI_IMAGE) {
+          runInDocker(env.CI_IMAGE_NAME) {
             sh 'python --version'
             sh 'pip install -r requirements.txt'
             sh 'pytest -q'
