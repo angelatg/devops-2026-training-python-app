@@ -43,7 +43,7 @@ pipeline {
           // TODO (E3): Ejecuta lint en contenedor Python.
           sh 'pip install -r requirements.txt flake8 mypy'
           docker.image(image).inside { sh 'make lint' }
-          #sh 'make lint'
+          //sh 'make lint'
         }
       }
     }
