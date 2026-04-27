@@ -84,6 +84,39 @@ pipeline {
       }
     }
 
-   
+    
+    // =========================
+    // Ejercicio 6 (compose) 
+    // =========================
+    stage('CD') {
+      when {
+        allOf {
+          anyOf {
+            branch 'develop'
+            branch 'master'
+          }
+        }
+      }
+      steps {
+        script {
+          // TODO (E6): Ejecuta:
+          env.CD_LOCAL_NAME = "local_app"
+          sh 'docker compose -p ${env.CD_LOCAL_NAME} up -d'
+          sh 'sleep 5 && docker compose -p ${env.CD_LOCAL_NAME} logs app'
+          
+        }
+      }
+      post {
+        always {
+          // TODO (E6):
+          sh 'docker compose -p ${env.CD_LOCAL_NAME} down --volumes'
+        }
+      }
+
+    }
+
+
+
+
   }
 }
