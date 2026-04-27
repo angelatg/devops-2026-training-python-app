@@ -35,15 +35,14 @@ pipeline {
     stage('CI - Lint') {
       agent {
         docker {
-          image 'python:3.6-slim'
+          image env.CI_IMAGE_NAME
         }
       }
       steps {
         script {
           // TODO (E3): Ejecuta lint en contenedor Python.
           sh 'pip install -r requirements.txt flake8 mypy'
-          docker.image(image).inside { sh 'make lint' }
-          //sh 'make lint'
+          sh 'make lint'
         }
       }
     }
