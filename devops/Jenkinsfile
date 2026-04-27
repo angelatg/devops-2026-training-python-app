@@ -91,12 +91,13 @@ pipeline {
 
     
     // =========================
-    // Ejercicio 6 (compose) 
+    // Ejercicio 6 (compose) + Ejercicio 6.1 (solo develop/master)
     // =========================
     stage('CD') {
       when {
         allOf {
           anyOf {
+            // [E6.1] TODO: añade parámetro para habilitar CD.
             expression { return params.RUN_CD }
             branch 'develop'
             branch 'master'
@@ -107,7 +108,7 @@ pipeline {
         echo "CD habilitado: RUN_CD=${params.RUN_CD}, branch=${env.BRANCH_NAME}"
         script {
           // TODO (E6): Ejecuta:
-          env.CD_LOCAL_NAME = "local_app"
+          env.CD_LOCAL_NAME = "localapp"
           sh "docker compose -p ${env.CD_LOCAL_NAME} up -d"
           sh "sleep 5 && docker compose -p ${env.CD_LOCAL_NAME} logs app"
           
