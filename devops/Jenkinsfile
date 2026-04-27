@@ -22,12 +22,9 @@ pipeline {
       steps {
         script {
           // TODO (E2): Ejecuta los tests unitarios dentro de la imagen CI construida.
-          echo "Job: ${env.JOB_NAME}"
-          echo "Build: ${env.BUILD_NUMBER}"
-          sh "pwd"
           sh 'python --version'
-          //sh 'pip install -r requirements.txt'
-          //sh 'pytest -q'
+          sh 'pip install -r requirements.txt'
+          sh 'pytest -q'
         }
       }
     }
