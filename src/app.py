@@ -30,7 +30,7 @@ def favorite_colors() -> List[Dict]:
 @app.route("/")
 def index() -> str:
     # Intentional formatting issue for the lint exercise: black will fix this.
-    payload = { "favorite_colors": favorite_colors() }
+    payload = {"favorite_colors": favorite_colors()}
     return json.dumps(payload)
 
 
