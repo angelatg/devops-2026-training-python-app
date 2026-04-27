@@ -45,7 +45,7 @@ pipeline {
       steps {
         script {
           // TODO (E3/E4): Ejecuta lint en contenedor Python.
-          runInDocker(env.CI_IMAGE_NAME_NAME) {
+          runInDocker(env.CI_IMAGE_NAME) {
             sh 'pip install -r requirements.txt flake8 mypy'
             sh 'make lint'
           }
