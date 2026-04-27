@@ -100,16 +100,16 @@ pipeline {
       steps {
         script {
           // TODO (E6): Ejecuta:
-          env.CD_LOCAL_NAME = "local_app"
-          sh 'docker compose -p ${env.CD_LOCAL_NAME} up -d'
-          sh 'sleep 5 && docker compose -p ${env.CD_LOCAL_NAME} logs app'
+          env.CD_LOCAL_NAME = "localapp"
+          sh "docker compose -p ${env.CD_LOCAL_NAME} up -d"
+          sh "sleep 5 && docker compose -p ${env.CD_LOCAL_NAME} logs app"
           
         }
       }
       post {
         always {
           // TODO (E6):
-          sh 'docker compose -p ${env.CD_LOCAL_NAME} down --volumes'
+          sh "docker compose -p ${env.CD_LOCAL_NAME} down --volumes"
         }
       }
 
