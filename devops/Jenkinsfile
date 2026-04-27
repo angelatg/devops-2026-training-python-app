@@ -52,6 +52,11 @@ pipeline {
     // Ejercicio 2 (Docker como agente) 
     // =========================
     stage('Test') {
+      agent {
+        docker {
+          image env.CI_IMAGE_NAME
+        }
+      }
       steps {
         script {
           // TODO (E2): Ejecuta los tests unitarios dentro de la imagen CI construida.
