@@ -15,13 +15,46 @@ pipeline {
       }
     }
 
+
+    // =========================
+    // Ejercicio 3 (preparación): construir imagen CI con make
+    // =========================
+    stage('CI - Build tools image') {
+      steps {
+        script {
+          // TODO (E3): Construye una imagen de CI desde devops/ci.Dockerfile.
+          env.CI_IMAGE_NAME = "python-ci-tools:${env.BUILD_NUMBER}"
+          docker.build(env.CI_IMAGE_NAME, "-f devops/ci.Dockerfile .")
+        }
+      }
+    }
+
+    // =========================
+    // Ejercicio 3 (separar CI): stage Lint
+    // =========================
+    stage('CI - Lint') {
+      agent {
+        docker {
+          image env.CI_IMAGE_NAME
+        }
+      }
+      steps {
+        script {
+          // TODO (E3): Ejecuta lint en contenedor Python.
+          sh 'pip install -r requirements.txt flake8 mypy'
+          sh 'make lint'
+        }
+      }
+    }
+
+
     // =========================
     // Ejercicio 2 (Docker como agente) 
     // =========================
     stage('Test') {
       agent {
         docker {
-          image 'python:3.6-slim'
+          image env.CI_IMAGE_NAME
         }
       }
       steps {
