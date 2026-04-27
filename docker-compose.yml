@@ -1,6 +1,6 @@
 services:
   app:
-    image: contrerasadr/devops-training-python-app:0.0.1
+    image: angelatg/devops-training-python-app:0.0.1
     #build: 
     #  context: .
     #  dockerfile: devops/Dockerfile
