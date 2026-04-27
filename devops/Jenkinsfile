@@ -18,12 +18,15 @@ pipeline {
     // =========================
     // Ejercicio 2 (Docker como agente) 
     // =========================
-    stage('CI - Test') {
+    stage('Test') {
+      agent {
+        docker {
+          image 'python:3.6-slim'
+        }
+      }
       steps {
         script {
           // TODO (E2): Ejecuta los tests unitarios dentro de la imagen CI construida.
-          sh 'python --version'
-          sh 'pip install -r requirements.txt'
           sh 'pytest -q'
         }
       }
