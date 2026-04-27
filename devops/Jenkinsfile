@@ -14,5 +14,25 @@ pipeline {
         echo "Build: ${env.BUILD_NUMBER}"
       }
     }
+
+    // =========================
+    // Ejercicio 2 (Docker como agente) 
+    // =========================
+    stage('Test') {
+      agent {
+        docker {
+          image 'python:3.6-slim'
+        }
+      }
+      steps {
+        script {
+          // TODO (E2): Ejecuta los tests unitarios dentro de la imagen CI construida.
+          sh 'pip install -r requirements.txt'
+          sh 'pytest -q'
+        }
+      }
+    }
+
+   
   }
 }
