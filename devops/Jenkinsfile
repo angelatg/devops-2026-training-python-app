@@ -107,17 +107,21 @@ pipeline {
       steps {
         echo "CD habilitado: RUN_CD=${params.RUN_CD}, branch=${env.BRANCH_NAME}"
         script {
-          // TODO (E6): Ejecuta:
+          // [E6.2] TODO: calcular DEPLOY_ENV y COMPOSE_PROJECT.
+          env.DEPLOY_ENV = (env.BRANCH_NAME == 'master') ? 'PRO' : 'DEV'
+          env.COMPOSE_PROJECT = env.DEPLOY_ENV.toLowerCase()
+
+          // TODO (E6/E6.2): Ejecuta:
           env.CD_LOCAL_NAME = "localapp"
-          sh "docker compose -p ${env.CD_LOCAL_NAME} up -d"
-          sh "sleep 5 && docker compose -p ${env.CD_LOCAL_NAME} logs app"
+          sh "docker compose -p ${env.COMPOSE_PROJECT} up -d"
+          sh "sleep 5 && docker compose -p ${env.COMPOSE_PROJECT} logs app"
           
         }
       }
       post {
         always {
           // TODO (E6):
-          sh "docker compose -p ${env.CD_LOCAL_NAME} down --volumes"
+          sh "docker compose -p ${env.COMPOSE_PROJECT} down --volumes"
         }
       }
 
