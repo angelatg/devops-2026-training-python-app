@@ -23,7 +23,7 @@ pipeline {
   environment {
     // [E6.4] TODO: define variables compartidas del pipeline.
     IMAGE_NAME = 'angelatg/devops-training-python-app:0.0.1'
-    CI_IMAGE_NAME = 'python-ci-tools:${env.BUILD_NUMBER}'
+    CI_IMAGE_NAME = "python-ci-tools:${env.BUILD_NUMBER}"
     CD_LOCAL_NAME = "localapp"
 
   }
