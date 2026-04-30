@@ -129,6 +129,13 @@ pipeline {
           // TODO (E6)
           sh "docker compose -p ${env.COMPOSE_PROJECT} down --volumes"
         }
+        success {
+          echo 'SUCCESS'
+        }
+        failure {
+          echo 'FAILURE'
+          sh "docker compose -p ${env.COMPOSE_PROJECT} logs || true"
+        }
       }
 
     }
@@ -136,16 +143,12 @@ pipeline {
 
   post {
       always {
-          // Limpieza: esto debe ejecutarse tanto si falla como si va bien.
-         sh 'docker compose down --volumes || true'
-         sh 'docker rmi IMAGE_NAME || true'
+         // Limpieza: esto debe ejecutarse tanto si falla como si va bien.
+         sh 'docker rmi ${env.IMAGE_NAME} || true'
+
+         // borrar imagen de ci-lint y ci-test
+        sh "docker rmi ${env.CI_IMAGE_NAME} || true"
       }
-      success {
-          echo 'SUCCESS'
-      }
-      failure {
-          echo 'FAILURE'
-           sh 'docker compose logs || true'
-      }
+      
   }
 }
