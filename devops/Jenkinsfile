@@ -144,7 +144,7 @@ pipeline {
   post {
       always {
          // Limpieza: esto debe ejecutarse tanto si falla como si va bien.
-         sh 'docker rmi ${env.IMAGE_NAME} || true'
+         sh "docker rmi ${env.IMAGE_NAME} || true"
 
          // borrar imagen de ci-lint y ci-test
         sh "docker rmi ${env.CI_IMAGE_NAME} || true"
