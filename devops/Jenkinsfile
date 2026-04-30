@@ -20,6 +20,15 @@ pipeline {
     booleanParam(name: 'RUN_CD', defaultValue: false, description: 'Ejecutar CD')
   }
 
+  environment {
+    // [E6.4] TODO: define variables compartidas del pipeline.
+    IMAGE_NAME = 'angelatg/devops-training-python-app:0.0.1'
+    CI_IMAGE_NAME = 'python-ci-tools:${env.BUILD_NUMBER}'
+    CD_LOCAL_NAME = "localapp"
+
+  }
+
+
   stages {
     stage('Info') {
       steps {
@@ -37,7 +46,6 @@ pipeline {
       steps {
         script {
           // TODO (E3): Construye una imagen de CI desde devops/ci.Dockerfile.
-          env.CI_IMAGE_NAME = "python-ci-tools:${env.BUILD_NUMBER}"
           docker.build(env.CI_IMAGE_NAME, "-f devops/ci.Dockerfile .")
         }
       }
@@ -83,7 +91,6 @@ pipeline {
       steps {
         script {
           // TODO (E5): Construye la imagen Docker usando el Dockerfile del repo:
-          env.IMAGE_NAME = "angelatg/devops-training-python-app:0.0.1"
           docker.build(env.IMAGE_NAME, "-f devops/Dockerfile .")
         }
       }
@@ -112,7 +119,6 @@ pipeline {
           env.COMPOSE_PROJECT = env.DEPLOY_ENV.toLowerCase()
 
           // TODO (E6/E6.2): Ejecuta:
-          env.CD_LOCAL_NAME = "localapp"
           sh "docker compose -p ${env.COMPOSE_PROJECT} up -d"
           sh "sleep 5 && docker compose -p ${env.COMPOSE_PROJECT} logs app"
           
