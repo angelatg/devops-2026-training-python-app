@@ -126,15 +126,26 @@ pipeline {
       }
       post {
         always {
-          // TODO (E6):
+          // TODO (E6)
           sh "docker compose -p ${env.COMPOSE_PROJECT} down --volumes"
         }
       }
 
     }
+  }
 
-
-
-
+  post {
+      always {
+          // Limpieza: esto debe ejecutarse tanto si falla como si va bien.
+         sh 'docker compose down --volumes || true'
+         sh 'docker rmi IMAGE_NAME || true'
+      }
+      success {
+          echo 'SUCCESS'
+      }
+      failure {
+          echo 'FAILURE'
+           sh 'docker compose logs || true'
+      }
   }
 }
